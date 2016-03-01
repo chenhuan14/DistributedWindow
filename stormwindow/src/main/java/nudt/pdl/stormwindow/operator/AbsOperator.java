@@ -1,17 +1,9 @@
 package nudt.pdl.stormwindow.operator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.AbstractQueuedLongSynchronizer.ConditionObject;
-
 import org.apache.commons.lang.StringUtils;
-
-import nudt.pdl.stormwindow.event.IEventType;
-import nudt.pdl.stormwindow.exception.StreamingException;
-import nudt.pdl.stormwindow.exception.StreamingRuntimeException;
-import nudt.pdl.stormwindow.storm.IEmitter;
 import nudt.pdl.stormwindow.util.Constant;
 
 
@@ -36,13 +28,9 @@ public abstract class AbsOperator implements IRichOperator
     private String operatorId;
     
     
-    private Map<String, IEmitter> emitters;
-    
-	private IEventType outputSchema;
 	private String outputStream;
     
     private List<String> inputStreams;
-    private Map<String, IEventType> inputSchemas;
     
     /**
      * <默认构造函数>
@@ -50,23 +38,12 @@ public abstract class AbsOperator implements IRichOperator
     public AbsOperator()
     {
     	inputStreams = new ArrayList<String>();
-		inputSchemas = new HashMap<>();
+    	inputStreams.add(Constant.DEFAULT_INPUT_STREAM);
 		outputStream = Constant.DEFAULT_OUTPUT_STREAM;
-		outputSchema = Constant.DEFAULT_OUTPUT_SCHMA;
-		addInputStream(Constant.DEFAULT_INPUT_STREAM);
-		addInputSchema(Constant.DEFAULT_INPUT_STREAM, Constant.DEFAULT_INPUT_SCHMA);
     	
     }
     
 
-    public final void initialize(Map<String, IEmitter> emitterMap)
-        throws StreamingException
-    {
-    	
-		this.emitters = emitterMap;
-   
-        initialize();
-    }
     
     @Override
 	public List<String> getInputStream() {
@@ -80,17 +57,6 @@ public abstract class AbsOperator implements IRichOperator
 		return this.outputStream;
 	}
 
-	@Override
-	public Map<String, IEventType> getInputSchema() {
-		// TODO Auto-generated method stub
-		return inputSchemas;
-	}
-
-	@Override
-	public IEventType getOutputSchema() {
-		// TODO Auto-generated method stub
-		return outputSchema;
-	}
 	
 	
 	public void setInputStream(List<String> streamNames)  {
@@ -104,25 +70,7 @@ public abstract class AbsOperator implements IRichOperator
 		
 	}
 
-	
-	public void setInputSchema(Map<String, IEventType> schemas) {
-		this.inputSchemas = schemas;
-	}
 
-	
-	public void setOutputSchema(IEventType schema)  {
-		this.outputSchema = schema;
-		
-	}
-
-
-    /**
-     * 初始化
-     *
-     * @throws StreamingException 初始化异常
-     */
-    public abstract void initialize()
-        throws StreamingException;
 
 
     /**
@@ -140,20 +88,6 @@ public abstract class AbsOperator implements IRichOperator
         }
     }
     
-    /**
-     * 添加输入流schema
-     * @param streamName 流名称
-     * @param schema 输入流schema
-     */
-    public void addInputSchema(String streamName, IEventType schema)
-    {
-        if (schema != null)
-        {
-            inputSchemas.put(streamName, schema);
-        }
-    }
-	
-
     
 
     public String getOperatorId()
@@ -188,45 +122,6 @@ public abstract class AbsOperator implements IRichOperator
     
    
   
-    /**
-     * 通过流名称获取emitter
-     *
-     * @return emitter
-     */
-    public Map<String, IEmitter> getEmitterMap()
-    {
-       return emitters;
-    }
-    
-    /**
-     * 通过流名称获取emitter
-     *
-     * @param streamName 流名称
-     * @return emitter
-     */
-    public IEmitter getEmitter(String streamName)
-    {
-        if (emitters.containsKey(streamName))
-        {
-            return emitters.get(streamName);
-        }
-        throw new StreamingRuntimeException("can not get emitter by stream name " + streamName);
-    }
-    
-    /**
-     * 通过流名称获取emitter
-     *
-     * @return emitter
-     */
-    public IEmitter getEmitter()
-    {
-        if (emitters.containsKey(getOutputStream()))
-        {
-            return emitters.get(getOutputStream());
-        }
-        throw new StreamingRuntimeException("can not get emitter by stream name " + this.getOutputStream());
-    }
-    
-    
+   
     
 }

@@ -7,7 +7,7 @@ import java.util.ArrayDeque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 import nudt.pdl.stormwindow.view.IDataCollection;
 import nudt.pdl.stormwindow.view.IView;
 
@@ -31,12 +31,12 @@ public class LengthBatchWindow extends LengthBasedWindow implements IBatch
     /**
      * 窗口中上个批次中事件  
      */
-    private ArrayDeque<IEvent> lastBatch = null;
+    private ArrayDeque<Tuple> lastBatch = null;
     
     /**
      * 窗口中当前批次中事件  
      */
-    private ArrayDeque<IEvent> curBatch = new ArrayDeque<IEvent>();
+    private ArrayDeque<Tuple> curBatch = new ArrayDeque<Tuple>();
     
     /**
      * <默认构造函数>
@@ -51,7 +51,7 @@ public class LengthBatchWindow extends LengthBasedWindow implements IBatch
      * {@inheritDoc}
      */
     @Override
-    public void update(IEvent[] newData, IEvent[] oldData)
+    public void update(Tuple[] newData, Tuple[] oldData)
     {
         /**
          * TODO 
@@ -65,7 +65,7 @@ public class LengthBatchWindow extends LengthBasedWindow implements IBatch
         }
         
         //将事件插入有效数据中
-        for (IEvent newEvent : newData)
+        for (Tuple newEvent : newData)
         {
             curBatch.add(newEvent);
         }
@@ -90,15 +90,15 @@ public class LengthBatchWindow extends LengthBasedWindow implements IBatch
     {
         if (this.hasViews())
         {
-            IEvent[] newData = null;
-            IEvent[] oldData = null;
+        	Tuple[] newData = null;
+        	Tuple[] oldData = null;
             if (!curBatch.isEmpty())
             {
-                newData = curBatch.toArray(new IEvent[curBatch.size()]);
+                newData = curBatch.toArray(new Tuple[curBatch.size()]);
             }
             if ((lastBatch != null) && (!lastBatch.isEmpty()))
             {
-                oldData = lastBatch.toArray(new IEvent[lastBatch.size()]);
+                oldData = lastBatch.toArray(new Tuple[lastBatch.size()]);
             }
             
             if ((newData != null) || (oldData != null))
@@ -116,7 +116,7 @@ public class LengthBatchWindow extends LengthBasedWindow implements IBatch
         }
         
         lastBatch = curBatch;
-        curBatch = new ArrayDeque<IEvent>();
+        curBatch = new ArrayDeque<Tuple>();
     }
     
     /**

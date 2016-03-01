@@ -3,9 +3,9 @@ package nudt.pdl.stormwindow.operator;
 import java.io.Serializable;
 import java.util.Map;
 
-import nudt.pdl.stormwindow.event.TupleEvent;
+import backtype.storm.tuple.Tuple;
 import nudt.pdl.stormwindow.exception.StreamingException;
-import nudt.pdl.stormwindow.storm.IEmitter;
+
 
 
 /**
@@ -21,7 +21,7 @@ public interface IOperator extends Serializable
      * @param emitters 事件发射器
      * @throws StreamingException 流处理异常
      */
-    void initialize(Map<String, IEmitter> emitters)
+    void initialize()
         throws StreamingException;
     
     /**
@@ -31,7 +31,7 @@ public interface IOperator extends Serializable
      * @param event 事件
      * @throws StreamingException 流处理异常
      */
-    void execute(String streamName, TupleEvent event)
+    void execute(String streamName, Tuple event)
         throws StreamingException;
     
     /**

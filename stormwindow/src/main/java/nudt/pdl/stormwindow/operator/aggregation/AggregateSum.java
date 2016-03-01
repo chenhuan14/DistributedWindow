@@ -1,11 +1,11 @@
 package nudt.pdl.stormwindow.operator.aggregation;
 
 
-import nudt.pdl.stormwindow.event.IEvent;
 
-import nudt.pdl.stormwindow.exception.StreamingException;
-
-import nudt.pdl.stormwindow.storm.IEmitter;
+import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Fields;
+import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 import nudt.pdl.stormwindow.storm.WindowedStormBolt;
 
 public class AggregateSum extends WindowedStormBolt{
@@ -13,13 +13,13 @@ public class AggregateSum extends WindowedStormBolt{
 	long sum = 0;
 
 
-	public void process(IEvent[] newData, IEvent[] oldData) {
+	public void process(Tuple[] newData, Tuple[] oldData) {
 		processNewData(newData);
 		processOldData(oldData);
-		sendResult();
+		sendToNextBolt("sumResult",new Values(sum));
 	}
 	
-	private void processNewData(IEvent[] newData)
+	private void processNewData(Tuple[] newData)
 	{
 		if(newData != null)
 		{
@@ -32,29 +32,21 @@ public class AggregateSum extends WindowedStormBolt{
 		
 	}
 	
-	private void processOldData(IEvent[] oldData)
+	private void processOldData(Tuple[] oldData)
 	{
 		if(oldData != null)
 		{
 			for(int i = 0 ;i < oldData.length; i++)
 			{
-				sum += (long)oldData[i].getValue(0);
-				
+				sum -= (long)oldData[i].getValue(0);	
 			}
 		}
 	}
 	
-	private void sendResult() 
-	{
-		
-		IEmitter emitter = getEmitter();
-		
-		try {
-			emitter.emit(sum);
-		} catch (StreamingException e) {
-			
-			e.printStackTrace();
-		}
-		
+	
+
+	@Override
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		declarer.declareStream("sumResult", new Fields("result"));
 	}
 }

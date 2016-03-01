@@ -3,7 +3,7 @@ package nudt.pdl.stormwindow.view;
 
 import java.io.Serializable;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 
 
 
@@ -20,7 +20,7 @@ public interface IDataCollection extends Serializable
      * @param newData 新事件
      * @param oldData 旧事件
      */
-    public void update(IEvent[] newData, IEvent[] oldData);
+    public void update(Tuple[] newData, Tuple[] oldData);
     
     /**
      * <根据已有缓存集创建新缓存集>

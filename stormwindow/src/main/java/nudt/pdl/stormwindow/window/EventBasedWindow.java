@@ -7,7 +7,8 @@ import java.util.ArrayDeque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
+
 import nudt.pdl.stormwindow.view.IDataCollection;
 import nudt.pdl.stormwindow.view.IRenew;
 import nudt.pdl.stormwindow.view.IView;
@@ -32,12 +33,12 @@ public class EventBasedWindow extends ViewImpl implements IBatch, IWindow, IRene
     /**
      * 窗口中上个批次中事件  
      */
-    private ArrayDeque<IEvent> lastBatch = null;
+    private ArrayDeque<Tuple> lastBatch = null;
     
     /**
      * 窗口中当前批次中事件  
      */
-    private ArrayDeque<IEvent> curBatch = new ArrayDeque<IEvent>();
+    private ArrayDeque<Tuple> curBatch = new ArrayDeque<Tuple>();
     
     /**
      * 窗口事件缓存集合
@@ -48,7 +49,7 @@ public class EventBasedWindow extends ViewImpl implements IBatch, IWindow, IRene
      * {@inheritDoc}
      */
     @Override
-    public void update(IEvent[] newData, IEvent[] oldData)
+    public void update(Tuple[] newData, Tuple[] oldData)
     {
         if (null == newData || 0 == newData.length)
         {
@@ -57,10 +58,10 @@ public class EventBasedWindow extends ViewImpl implements IBatch, IWindow, IRene
         }
         
         //将事件加入有效数据中
-        for (IEvent newEvent : newData)
+        for (Tuple newEvent : newData)
         {
             //如果是标记事件，则将本批次的事件你发送出去
-            if (newEvent.isFlagEvent())
+            if (newEvent.contains("flagEvent"))
             {
                 sendBatchData();
             }
@@ -103,15 +104,15 @@ public class EventBasedWindow extends ViewImpl implements IBatch, IWindow, IRene
     {
         if (this.hasViews())
         {
-            IEvent[] newData = null;
-            IEvent[] oldData = null;
+        	Tuple[] newData = null;
+        	Tuple[] oldData = null;
             if (!curBatch.isEmpty())
             {
-                newData = curBatch.toArray(new IEvent[curBatch.size()]);
+                newData = curBatch.toArray(new Tuple[curBatch.size()]);
             }
             if ((lastBatch != null) && (!lastBatch.isEmpty()))
             {
-                oldData = lastBatch.toArray(new IEvent[lastBatch.size()]);
+                oldData = lastBatch.toArray(new Tuple[lastBatch.size()]);
             }
             
             if ((newData != null) || (oldData != null))
@@ -129,7 +130,7 @@ public class EventBasedWindow extends ViewImpl implements IBatch, IWindow, IRene
         }
         
         lastBatch = curBatch;
-        curBatch = new ArrayDeque<IEvent>();
+        curBatch = new ArrayDeque<Tuple>();
     }
     
     /**

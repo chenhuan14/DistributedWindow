@@ -7,7 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
+
 
 
 /**
@@ -35,15 +36,15 @@ public final class FirstLevelStream implements IViewable
     /**
      * 最后加入事件
      */
-    private IEvent lastInsertedEvent;
+    private Tuple lastInsertedEvent;
     
     /**
      * <接受外部数据>
      * @param theEvent 新事件
      */
-    public final void add(IEvent theEvent)
+    public final void add(Tuple theEvent)
     {
-        IEvent[] newData = new IEvent[] {theEvent};
+        Tuple[] newData = new Tuple[] {theEvent};
         for (IView childView : children)
         {
             childView.update(newData, null);
@@ -138,7 +139,7 @@ public final class FirstLevelStream implements IViewable
      * 返回 lastInsertedEvent
      * @return 返回 lastInsertedEvent
      */
-    public final IEvent getLastInsertedEvent()
+    public final Tuple getLastInsertedEvent()
     {
         return lastInsertedEvent;
     }

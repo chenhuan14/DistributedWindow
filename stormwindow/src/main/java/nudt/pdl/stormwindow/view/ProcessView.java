@@ -7,7 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 import nudt.pdl.stormwindow.operator.IProcessor;
 
 
@@ -41,7 +41,7 @@ public class ProcessView implements IView
      * {@inheritDoc}
      */
     @Override
-    public void update(IEvent[] newData, IEvent[] oldData)
+    public void update(Tuple[] newData, Tuple[] oldData)
     {
         if (null == processor)
         {

@@ -13,7 +13,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 import nudt.pdl.stormwindow.exception.StreamingRuntimeException;
 
 
@@ -70,7 +70,7 @@ public class TimeSlideEventList implements Iterable, Serializable
     
     private ArrayDeque<TimeEventPair> datas = null;
     
-    private Map<IEvent, TimeEventPair> reverseIndex = null;
+    private Map<Tuple, TimeEventPair> reverseIndex = null;
     
     /**
      * 默认构造函数
@@ -90,7 +90,7 @@ public class TimeSlideEventList implements Iterable, Serializable
         this.datas = new ArrayDeque<TimeEventPair>();
         if (isSupportRemove)
         {
-            reverseIndex = new HashMap<IEvent, TimeEventPair>();
+            reverseIndex = new HashMap<Tuple, TimeEventPair>();
         }
     }
     
@@ -113,7 +113,7 @@ public class TimeSlideEventList implements Iterable, Serializable
      * @param timestamp 时间
      * @param theEvent 事件
      */
-    public void add(final long timestamp, final IEvent theEvent)
+    public void add(final long timestamp, final Tuple theEvent)
     {
         //为空
         if (datas.isEmpty())
@@ -136,17 +136,17 @@ public class TimeSlideEventList implements Iterable, Serializable
         TimeEventPair last = datas.getLast();
         if (last.timestamp == timestamp)
         {
-            if (last.container instanceof IEvent)
+            if (last.container instanceof Tuple)
             {
-                List<IEvent> list = new ArrayList<IEvent>();
-                list.add((IEvent)last.container);
+                List<Tuple> list = new ArrayList<Tuple>();
+                list.add((Tuple)last.container);
                 list.add(theEvent);
                 last.container = list;
             }
             else if (last.container instanceof List)
             {
                 @SuppressWarnings("unchecked")
-                List<IEvent> list = (List<IEvent>)last.container;
+                List<Tuple> list = (List<Tuple>)last.container;
                 list.add(theEvent);
             }
             else
@@ -177,7 +177,7 @@ public class TimeSlideEventList implements Iterable, Serializable
      * @param theEvent 待删除事件
      */
     @SuppressWarnings("unchecked")
-    public final void remove(final IEvent theEvent)
+    public final void remove(final Tuple theEvent)
     {
         if (reverseIndex == null)
         {
@@ -198,7 +198,7 @@ public class TimeSlideEventList implements Iterable, Serializable
         }
         else if (pair.container != null)
         {
-            List<IEvent> list = (List<IEvent>)pair.container;
+            List<Tuple> list = (List<Tuple>)pair.container;
             list.remove(theEvent);
         }
         else
@@ -216,7 +216,7 @@ public class TimeSlideEventList implements Iterable, Serializable
      * @return 过期事件
      */
     @SuppressWarnings("unchecked")
-    public IEvent[] getOldData(final long currentTime)
+    public Tuple[] getOldData(final long currentTime)
     {
         //为空
         if (datas.isEmpty())
@@ -232,16 +232,16 @@ public class TimeSlideEventList implements Iterable, Serializable
         }
         
         //事件过期事件小于当前时间，则加入到OldData数组中
-        List<IEvent> oldData = new ArrayList<IEvent>();
+        List<Tuple> oldData = new ArrayList<Tuple>();
         while (pair.timestamp < currentTime)
         {
-            if (pair.container instanceof IEvent)
+            if (pair.container instanceof Tuple)
             {
-                oldData.add((IEvent)pair.container);
+                oldData.add((Tuple)pair.container);
             }
             else if (pair.container instanceof List)
             {
-                oldData.addAll((List<IEvent>)pair.container);
+                oldData.addAll((List<Tuple>)pair.container);
             }
             else
             {
@@ -263,13 +263,13 @@ public class TimeSlideEventList implements Iterable, Serializable
         {
             if (reverseIndex != null)
             {
-                for (IEvent theEvent : oldData)
+                for (Tuple theEvent : oldData)
                 {
                     reverseIndex.remove(theEvent);
                 }
             }
             
-            return oldData.toArray(new IEvent[oldData.size()]);
+            return oldData.toArray(new Tuple[oldData.size()]);
         }
         
         return null;

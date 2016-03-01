@@ -1,10 +1,6 @@
 package nudt.pdl.stormwindow.topology;
 
 import java.util.Map;
-import java.util.Random;
-
-import org.apache.commons.lang.Validate;
-
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.spout.SpoutOutputCollector;
@@ -18,13 +14,9 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
-import clojure.lang.Util;
-import nudt.pdl.stormwindow.event.Attribute;
-import nudt.pdl.stormwindow.event.TupleEventType;
-import nudt.pdl.stormwindow.operator.AbsWindowedOperator;
-import nudt.pdl.stormwindow.operator.IRichOperator;
+
 import nudt.pdl.stormwindow.operator.aggregation.AggregateSum;
-import nudt.pdl.stormwindow.storm.StormBolt;
+
 import nudt.pdl.stormwindow.storm.WindowedStormBolt;
 import nudt.pdl.stormwindow.window.creator.WindowEviction;
 import nudt.pdl.stormwindow.window.creator.WindowInfo;
@@ -32,22 +24,26 @@ import nudt.pdl.stormwindow.window.creator.WindowType;
 
 class RandomLongSpout extends BaseRichSpout{
 	  
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	SpoutOutputCollector _collector;
-	Random _rand;
+	static long i = 0 ;
 	
 	@Override
 	public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
 		// TODO Auto-generated method stub
 		_collector = collector;
-		_rand = new Random(System.currentTimeMillis());
+		
 	}
 
 	@Override
 	public void nextTuple() {
 		// TODO Auto-generated method stub
-		Utils.sleep(100);
-		long data = _rand.nextLong();
-		_collector.emit(new Values(data));
+		Utils.sleep(1000);
+		_collector.emit(new Values(i++));
 	}
 
 	@Override
@@ -79,13 +75,10 @@ public class SumTopology {
 	{
 		
 		TopologyBuilder builder = new TopologyBuilder();
-		builder.setSpout("spout", new RandomLongSpout(), 1);
+		builder.setSpout("spout", new RandomLongSpout(), 2);
 		
-		WindowedStormBolt sumBolt = new AggregateSum();
-		sumBolt.setOutputStream("sumResult");
-		sumBolt.setOutputSchema(new TupleEventType("sumResult", new Attribute(Long.class, "result")));
-		
-		WindowInfo info = new WindowInfo(WindowType.LengthtBased, WindowEviction.Sliding, 10);
+		WindowedStormBolt sumBolt = new AggregateSum();	
+		WindowInfo info = new WindowInfo(WindowType.LengthtBased, WindowEviction.Sliding, 2);
 		sumBolt.setWindowInfo(info);
 		
 		
@@ -93,7 +86,7 @@ public class SumTopology {
 		builder.setBolt("print", new ConsolePrinter()).allGrouping("sum", "sumResult");
 		
 		 Config conf = new Config();
-		 conf.setDebug(true);
+		 conf.setDebug(false);
 		
 		 LocalCluster cluster = new LocalCluster();
 	     cluster.submitTopology("aggregateSum", conf, builder.createTopology());

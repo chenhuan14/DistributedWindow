@@ -1,6 +1,5 @@
 package nudt.pdl.stormwindow.storm;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,19 +11,19 @@ import org.slf4j.LoggerFactory;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
-import backtype.storm.topology.OutputFieldsDeclarer;
-import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.utils.Container;
-import nudt.pdl.stormwindow.event.IEventType;
-import nudt.pdl.stormwindow.event.TupleEvent;
+import backtype.storm.tuple.Values;
 import nudt.pdl.stormwindow.exception.StreamingException;
 import nudt.pdl.stormwindow.operator.AbsWindowedOperator;
-import nudt.pdl.stormwindow.operator.IRichOperator;
 import nudt.pdl.stormwindow.util.Constant;
 
 public abstract class WindowedStormBolt extends AbsWindowedOperator implements IRichBolt{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1645582908889146825L;
+
 	private static final Logger LOG = LoggerFactory.getLogger(WindowedStormBolt.class);
 	
 	private OutputCollector collector;
@@ -34,17 +33,14 @@ public abstract class WindowedStormBolt extends AbsWindowedOperator implements I
 		super();
 	}
 	
-
-
 	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
 		// TODO Auto-generated method stub
 		this.collector = collector;
 		
-		Map<String,IEmitter> emitters = createEmitters(collector);
         try
         {
-            initialize(emitters);
+            initialize();
         }
         catch (StreamingException e)
         {
@@ -52,6 +48,16 @@ public abstract class WindowedStormBolt extends AbsWindowedOperator implements I
             throw new RuntimeException("failed to initialize output stream", e);
         }
 		
+	}
+	
+	public void sendToNextBolt(String streamID, Values value)
+	{
+		collector.emit(streamID,value);
+	}
+	
+	public void sendToNextBolt(Values value)
+	{
+		collector.emit(value);
 	}
 
 	@Override
@@ -74,25 +80,16 @@ public abstract class WindowedStormBolt extends AbsWindowedOperator implements I
         try
         {
             List<String> inStreams = getInputStream();
-            if(inStreams == null)
-            {
-                inStreams = new ArrayList<>();
-                inStreams.add(Constant.DEFAULT_INPUT_STREAM);
-            }
-            
+ 
             for (String streamName : inStreams)
             {
-            	IEventType type = (IEventType) getInputSchema().get(streamName);
-            	if(type == null)
-            		type = Constant.DEFAULT_INPUT_SCHMA;
-            	
+    	
                 if (streamName != Constant.DEFAULT_INPUT_STREAM && !sourceStreamName.equals(streamName))
                 {
                     continue;
                 }
                
-                TupleEvent event = TupleTransform.tupeToEvent(input, type);
-                execute(streamName, event);
+                execute(streamName, input);
             }
         }
         catch (StreamingException e)
@@ -118,41 +115,6 @@ public abstract class WindowedStormBolt extends AbsWindowedOperator implements I
         }
     }
     
-
-	/*
-	 *只实现只有一个输出流的操作 
-	 */
-	@Override
-	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		// TODO Auto-generated method stub
-		 IEventType schema = getOutputSchema();
-         if (schema == null)
-         {
-             schema = Constant.DEFAULT_OUTPUT_SCHMA;
-         }
-         
-         if (!StringUtils.isEmpty(getOutputStream()) && !getOutputStream().equals(Constant.DEFAULT_OUTPUT_STREAM))
-         {
-             declarer.declareStream(getOutputStream(), new Fields(schema.getAllAttributeNames()));
-         }
-         else
-         {
-             declarer.declare(new Fields(schema.getAllAttributeNames()));
-         }
-	}
-
-	/**
-	 * 目前只实现了只有一个输出流的操作
-	 * @param collector
-	 * @return
-	 */
-	private Map<String, IEmitter> createEmitters(OutputCollector collector)
-    {
-        Map<String, IEmitter> emitters = Maps.newHashMap();
-        BoltEmitter emitter = new BoltEmitter(collector, getOutputStream());
-        emitters.put(getOutputStream(), emitter);
-        return emitters;
-    }
 
 	@Override
 	public Map<String, Object> getComponentConfiguration() {

@@ -1,6 +1,6 @@
 package nudt.pdl.stormwindow.view;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 
 /**
  * 
@@ -26,5 +26,5 @@ public interface IView extends IViewable
      * @param newData 新数据
      * @param oldData 过期数据
      */
-    void update(IEvent[] newData, IEvent[] oldData);
+    void update(Tuple[] newData, Tuple[] oldData);
 }

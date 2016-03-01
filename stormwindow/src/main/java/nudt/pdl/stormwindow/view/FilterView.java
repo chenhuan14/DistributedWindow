@@ -4,7 +4,7 @@ package nudt.pdl.stormwindow.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 import nudt.pdl.stormwindow.expression.IExpression;
 
 
@@ -36,10 +36,10 @@ public class FilterView extends ViewImpl implements IRenew
      * {@inheritDoc}
      */
     @Override
-    public void update(IEvent[] newData, IEvent[] oldData)
+    public void update(Tuple[] newData, Tuple[] oldData)
     {
-        IEvent[] newE = filterEvent(newData, true);
-        IEvent[] oldE = filterEvent(oldData, false);
+        Tuple[] newE = filterEvent(newData, true);
+        Tuple[] oldE = filterEvent(oldData, false);
         
         if (newE != null || oldE != null)
         {
@@ -47,16 +47,16 @@ public class FilterView extends ViewImpl implements IRenew
         }
     }
     
-    private IEvent[] filterEvent(IEvent[] events, boolean isNewData)
+    private Tuple[] filterEvent(Tuple[] events, boolean isNewData)
     {
         if (events == null)
         {
             return null;
         }
         
-        List<IEvent> qualified = new ArrayList<IEvent>();
+        List<Tuple> qualified = new ArrayList<Tuple>();
         Boolean pass = null;
-        for (IEvent e : events)
+        for (Tuple e : events)
         {
             pass = (Boolean)boolexpr.evaluate(e);
             if (null != pass && pass)
@@ -67,7 +67,7 @@ public class FilterView extends ViewImpl implements IRenew
         
         if (qualified.size() > 0)
         {
-            return qualified.toArray(new IEvent[qualified.size()]);
+            return qualified.toArray(new Tuple[qualified.size()]);
         }
         else
         {

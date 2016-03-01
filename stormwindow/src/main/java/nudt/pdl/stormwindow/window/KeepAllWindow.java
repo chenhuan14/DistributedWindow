@@ -5,7 +5,8 @@ import java.util.LinkedHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
+
 import nudt.pdl.stormwindow.view.IDataCollection;
 import nudt.pdl.stormwindow.view.IRenew;
 import nudt.pdl.stormwindow.view.IView;
@@ -32,7 +33,7 @@ public class KeepAllWindow extends ViewImpl implements IWindow, IRenew
     /**
      * 窗口中保留事件
      */
-    private LinkedHashSet<IEvent> events;
+    private LinkedHashSet<Tuple> events;
     
     /**
      * 窗口事件缓存集合
@@ -45,12 +46,12 @@ public class KeepAllWindow extends ViewImpl implements IWindow, IRenew
      */
     public KeepAllWindow()
     {
-        events = new LinkedHashSet<IEvent>();
+        events = new LinkedHashSet<Tuple>();
     }
     
     /** {@inheritDoc} */
     @Override
-    public void update(IEvent[] newData, IEvent[] oldData)
+    public void update(Tuple[] newData, Tuple[] oldData)
     {
         if (newData == null && oldData == null)
         {
@@ -59,7 +60,7 @@ public class KeepAllWindow extends ViewImpl implements IWindow, IRenew
         
         if (newData != null)
         {
-            for (IEvent theEvent : newData)
+            for (Tuple theEvent : newData)
             {
                 events.add(theEvent);
             }
@@ -67,7 +68,7 @@ public class KeepAllWindow extends ViewImpl implements IWindow, IRenew
         
         if (oldData != null)
         {
-            for (IEvent theEvent : oldData)
+            for (Tuple theEvent : oldData)
             {
                 events.remove(theEvent);
             }

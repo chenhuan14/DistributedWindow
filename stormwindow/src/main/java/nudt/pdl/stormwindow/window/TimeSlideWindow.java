@@ -5,7 +5,7 @@ package nudt.pdl.stormwindow.window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 import nudt.pdl.stormwindow.timer.TimeService;
 import nudt.pdl.stormwindow.view.IDataCollection;
 
@@ -49,7 +49,7 @@ public class TimeSlideWindow extends TimeBasedWindow
      * {@inheritDoc}
      */
     @Override
-    public void update(IEvent[] newData, IEvent[] oldData)
+    public void update(Tuple[] newData, Tuple[] oldData)
     {
         //TODO 未考虑窗口叠加时，上一个窗口传递的过期数据的处理。
         
@@ -100,7 +100,7 @@ public class TimeSlideWindow extends TimeBasedWindow
         try
         {
             lock();
-            IEvent[] oldData = events.getOldData(currentTime);
+            Tuple[] oldData = events.getOldData(currentTime);
             
             if (null == oldData)
             {

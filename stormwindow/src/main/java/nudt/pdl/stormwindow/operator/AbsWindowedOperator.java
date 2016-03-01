@@ -1,6 +1,6 @@
 package nudt.pdl.stormwindow.operator;
 
-import nudt.pdl.stormwindow.event.TupleEvent;
+import backtype.storm.tuple.Tuple;
 import nudt.pdl.stormwindow.exception.StreamingException;
 
 import nudt.pdl.stormwindow.view.FirstLevelStream;
@@ -15,10 +15,7 @@ public abstract class AbsWindowedOperator extends AbsOperator implements IProces
 	private WindowInfo windowInfo ;
 	private FirstLevelStream firstStream ;
 	private IWindow window;
-	
 
-
-  
 	public AbsWindowedOperator()
 	{
 		super();
@@ -59,10 +56,11 @@ public abstract class AbsWindowedOperator extends AbsOperator implements IProces
 		}
 	}
 	
+
 	
 
 	@Override
-	public void execute(String streamName, TupleEvent event) throws StreamingException {
+	public void execute(String streamName, Tuple event) throws StreamingException {
 		firstStream.add(event);
 	}
 

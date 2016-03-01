@@ -8,7 +8,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
+
+
 
 
 /**
@@ -127,7 +129,7 @@ public abstract class ViewImpl implements IView
      * @param newData 新事件
      * @param oldData 旧事件
      */
-    public void updateChild(IEvent[] newData, IEvent[] oldData)
+    public void updateChild(Tuple[] newData, Tuple[] oldData)
     {
         for (IView child : subViews)
         {

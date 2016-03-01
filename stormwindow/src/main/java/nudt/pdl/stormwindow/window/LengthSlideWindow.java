@@ -7,7 +7,7 @@ import java.util.ArrayDeque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 import nudt.pdl.stormwindow.view.IDataCollection;
 import nudt.pdl.stormwindow.view.IView;
 
@@ -32,7 +32,7 @@ public class LengthSlideWindow extends LengthBasedWindow
     /**
      * 窗口事件集合，先入先出。
      */
-    private final ArrayDeque<IEvent> events = new ArrayDeque<IEvent>();
+    private final ArrayDeque<Tuple> events = new ArrayDeque<Tuple>();
     
     /**
      * <默认构造函数>
@@ -47,7 +47,7 @@ public class LengthSlideWindow extends LengthBasedWindow
      * {@inheritDoc}
      */
     @Override
-    public void update(IEvent[] newData, IEvent[] oldData)
+    public void update(Tuple[] newData, Tuple[] oldData)
     {
         //TODO 未考虑窗口叠加时，上一个窗口传递的过期数据的处理。
         //将新事件加入到窗口中
@@ -57,7 +57,7 @@ public class LengthSlideWindow extends LengthBasedWindow
             return;
         }
         
-        for (IEvent event : newData)
+        for (Tuple event : newData)
         {
             events.add(event);
         }
@@ -68,10 +68,10 @@ public class LengthSlideWindow extends LengthBasedWindow
          * 将多余的事件标记为过期时间，移出窗口。
          */
         int expireCount = (int) (events.size() - getKeepLength());
-        IEvent[] expireData = null;
+        Tuple[] expireData = null;
         if (expireCount > 0)
         {
-            expireData = new IEvent[expireCount];
+            expireData = new Tuple[expireCount];
             for (int i = 0; i < expireCount; i++)
             {
                 expireData[i] = events.removeFirst();

@@ -1,6 +1,6 @@
 package nudt.pdl.stormwindow.view;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
 
 /**
  * Functor功能视图
@@ -15,7 +15,7 @@ public class FunctorView extends ViewImpl
      * {@inheritDoc}
      */
     @Override
-    public void update(IEvent[] newData, IEvent[] oldData)
+    public void update(Tuple[] newData, Tuple[] oldData)
     {
         updateChild(newData, oldData);
     }

@@ -3,7 +3,9 @@ package nudt.pdl.stormwindow.expression;
 
 import java.io.Serializable;
 
-import nudt.pdl.stormwindow.event.IEvent;
+import backtype.storm.tuple.Tuple;
+
+
 
 /**
  * 
@@ -17,19 +19,14 @@ public interface IExpression extends Serializable
      * @param theEvent 事件
      * @return 结果
      */
-    Object evaluate(IEvent theEvent);
+    Object evaluate(Tuple tuple);
     
     /**
      * <多流事件表达式求值>
      * @param eventsPerStream 多流事件
      * @return 结果
      */
-    Object evaluate(IEvent[] eventsPerStream);
+    Object evaluate(Tuple[] eventsPerStream);
     
-    /**
-     * <返回表达式返回类型>
-     * <功能详细描述>
-     * @return 类型
-     */
-    Class< ? > getType();
+
 }
