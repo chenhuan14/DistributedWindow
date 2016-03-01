@@ -1,12 +1,18 @@
 package nudt.pdl.stormwindow.operator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.AbstractQueuedLongSynchronizer.ConditionObject;
+
+import org.apache.commons.lang.StringUtils;
 
 import nudt.pdl.stormwindow.event.IEventType;
 import nudt.pdl.stormwindow.exception.StreamingException;
 import nudt.pdl.stormwindow.exception.StreamingRuntimeException;
 import nudt.pdl.stormwindow.storm.IEmitter;
+import nudt.pdl.stormwindow.util.Constant;
 
 
 /**
@@ -25,8 +31,6 @@ public abstract class AbsOperator implements IRichOperator
      */
     private static final long serialVersionUID = 9152942480213961636L;
     
-
-    
     private int parallelNumber;
     
     private String operatorId;
@@ -34,20 +38,82 @@ public abstract class AbsOperator implements IRichOperator
     
     private Map<String, IEmitter> emitters;
     
+	private IEventType outputSchema;
+	private String outputStream;
+    
+    private List<String> inputStreams;
+    private Map<String, IEventType> inputSchemas;
+    
     /**
      * <默认构造函数>
      */
     public AbsOperator()
     {
-        
+    	inputStreams = new ArrayList<String>();
+		inputSchemas = new HashMap<>();
+		outputStream = Constant.DEFAULT_OUTPUT_STREAM;
+		outputSchema = Constant.DEFAULT_OUTPUT_SCHMA;
     }
     
 
     public final void initialize(Map<String, IEmitter> emitterMap)
         throws StreamingException
     {
-        
+    	this.addInputStream(Constant.DEFAULT_INPUT_STREAM);
+		this.addInputSchema(Constant.DEFAULT_INPUT_STREAM, Constant.DEFAULT_INPUT_SCHMA);
+    	
+		this.emitters = emitterMap;
+   
+        initialize();
     }
+    
+    @Override
+	public List<String> getInputStream() {
+		// TODO Auto-generated method stub
+		return this.inputStreams;
+	}
+
+	@Override
+	public String getOutputStream() {
+		// TODO Auto-generated method stub
+		return this.getOutputStream();
+	}
+
+	@Override
+	public Map<String, IEventType> getInputSchema() {
+		// TODO Auto-generated method stub
+		return inputSchemas;
+	}
+
+	@Override
+	public IEventType getOutputSchema() {
+		// TODO Auto-generated method stub
+		return outputSchema;
+	}
+	
+	
+	public void setInputStream(List<String> streamNames) throws StreamingException {
+		this.inputStreams = streamNames;
+		
+	}
+
+	
+	public void setOutputStream(String streamName) throws StreamingException {
+		this.outputStream = streamName;
+		
+	}
+
+	
+	public void setInputSchema(Map<String, IEventType> schemas) throws StreamingException {
+		this.inputSchemas = schemas;
+	}
+
+	
+	public void setOutputSchema(IEventType schema) throws StreamingException {
+		this.outputSchema = schema;
+		
+	}
+
 
     /**
      * 初始化
@@ -58,25 +124,34 @@ public abstract class AbsOperator implements IRichOperator
         throws StreamingException;
 
 
-
     /**
-     * 设置输入流名称
-     *
-     * @param streamNames 输入流名称
-     * @throws StreamingException 算子处理异常
+     * 添加输入流
+     * @param streamName 输入流名称
      */
-    public abstract void setInputStream(List<String> streamNames)
-        throws StreamingException;
+    public void addInputStream(String streamName)
+    {
+        if (!StringUtils.isEmpty(streamName))
+        {
+            if (!inputStreams.contains(streamName))
+            {
+                inputStreams.add(streamName);
+            }
+        }
+    }
     
     /**
-     * 设置输出流名称
-     *
-     * @param streamName 输出流名称
-     * @throws StreamingException 算子处理异常
+     * 添加输入流schema
+     * @param streamName 流名称
+     * @param schema 输入流schema
      */
-    public abstract void setOutputStream(String streamName)
-        throws StreamingException;
-    
+    public void addInputSchema(String streamName, IEventType schema)
+    {
+        if (schema != null)
+        {
+            inputSchemas.put(streamName, schema);
+        }
+    }
+	
 
     
 
@@ -150,5 +225,7 @@ public abstract class AbsOperator implements IRichOperator
         }
         throw new StreamingRuntimeException("can not get emitter by stream name " + this.getOutputStream());
     }
+    
+    
     
 }

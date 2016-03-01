@@ -26,6 +26,17 @@ public class WindowInfo {
 		keepLength = 100;
 		slideInteval = 1;
 	}
+	
+	
+
+	public WindowInfo(WindowType windowType, WindowEviction windowEviction, long keepLength) {
+		super();
+		this.windowType = windowType;
+		this.windowEviction = windowEviction;
+		this.keepLength = keepLength;
+	}
+
+
 
 	public int getSlideInteval() {
 		return slideInteval;

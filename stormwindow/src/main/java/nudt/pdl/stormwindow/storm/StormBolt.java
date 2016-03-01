@@ -18,6 +18,7 @@ import nudt.pdl.stormwindow.event.IEventType;
 import nudt.pdl.stormwindow.event.TupleEvent;
 import nudt.pdl.stormwindow.exception.StreamingException;
 import nudt.pdl.stormwindow.operator.IRichOperator;
+import nudt.pdl.stormwindow.util.Constant;
 
 public class StormBolt implements IRichBolt,StreamAdapter{
 	
@@ -25,6 +26,10 @@ public class StormBolt implements IRichBolt,StreamAdapter{
 	private IRichOperator functionStream;
 	private OutputCollector collector;
 	
+	public StormBolt()
+	{
+		super();
+	}
 	
 	@Override
 	public void setOperator(IRichOperator operator) {
@@ -135,10 +140,6 @@ public class StormBolt implements IRichBolt,StreamAdapter{
          }
 	}
 
-
-
-
-	
 	/**
 	 * 目前只实现了只有一个输出流的操作
 	 * @param collector

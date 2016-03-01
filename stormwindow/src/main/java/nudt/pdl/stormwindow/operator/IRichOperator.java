@@ -40,5 +40,17 @@ public interface IRichOperator extends IOperator{
      */
     String getOutputStream();
     
+    /**
+     * 获取输入schema
+     * @return 输入schema
+     */
+    Map<String, IEventType> getInputSchema();
+    
+    /**
+     * 获取输出schema
+     * @return 输出schema
+     */
+    IEventType getOutputSchema();
+    
 
 }

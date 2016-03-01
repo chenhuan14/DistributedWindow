@@ -55,4 +55,9 @@ public class BoltEmitter implements IEmitter, Serializable{
         }
 	}
 
+	@Override
+	public void emit(Object data) throws StreamingException {
+		emit(new Object[]{data});
+	}
+
 }

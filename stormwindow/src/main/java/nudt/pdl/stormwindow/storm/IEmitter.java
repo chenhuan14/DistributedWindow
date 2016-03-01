@@ -11,4 +11,7 @@ public interface IEmitter
      */
     void emit(Object[] datas)
         throws StreamingException;
+    
+    void emit(Object data)
+    	throws StreamingException;
 }

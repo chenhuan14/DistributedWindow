@@ -5,46 +5,53 @@ import java.util.Map;
 
 import nudt.pdl.stormwindow.event.IEvent;
 import nudt.pdl.stormwindow.event.IEventType;
+import nudt.pdl.stormwindow.exception.StreamingException;
 import nudt.pdl.stormwindow.operator.AbsWindowedOperator;
+import nudt.pdl.stormwindow.storm.IEmitter;
 
 public class AggregateSum extends AbsWindowedOperator{
 
 	long sum = 0;
-	
-	
-	
-	public  AggregateSum(String inputStream, String OutputStream) {
-		// TODO Auto-generated constructor stub
-	}
-	
-	@Override
-	public List<String> getInputStream() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getOutputStream() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map<String, IEventType> getInputSchema() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IEventType getOutputSchema() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void process(IEvent[] newData, IEvent[] oldData) {
-		// TODO Auto-generated method stub
+		processNewData(newData);
+		processOldData(oldData);
+		sendResult();
+	}
+	
+	private void processNewData(IEvent[] newData)
+	{
+		for(IEvent event : newData)
+		{
+			sum += (long)event.getValue("long");
+			
+		}
+	}
+	
+	private void processOldData(IEvent[] oldData)
+	{
+		for(IEvent event : oldData)
+		{
+			sum -= (long)event.getValue("long");
+			
+		}
+	}
+	
+	private void sendResult() 
+	{
+		
+		IEmitter emitter = getEmitter();
+		
+		try {
+			emitter.emit(sum);
+		} catch (StreamingException e) {
+			
+			e.printStackTrace();
+		}
 		
 	}
+	
+	
 
 }
