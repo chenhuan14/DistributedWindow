@@ -1,19 +1,18 @@
 package nudt.pdl.stormwindow.operator.aggregation;
 
-import java.util.List;
-import java.util.Map;
 
 import nudt.pdl.stormwindow.event.IEvent;
-import nudt.pdl.stormwindow.event.IEventType;
-import nudt.pdl.stormwindow.exception.StreamingException;
-import nudt.pdl.stormwindow.operator.AbsWindowedOperator;
-import nudt.pdl.stormwindow.storm.IEmitter;
 
-public class AggregateSum extends AbsWindowedOperator{
+import nudt.pdl.stormwindow.exception.StreamingException;
+
+import nudt.pdl.stormwindow.storm.IEmitter;
+import nudt.pdl.stormwindow.storm.WindowedStormBolt;
+
+public class AggregateSum extends WindowedStormBolt{
 
 	long sum = 0;
 
-	@Override
+
 	public void process(IEvent[] newData, IEvent[] oldData) {
 		processNewData(newData);
 		processOldData(oldData);
@@ -22,19 +21,26 @@ public class AggregateSum extends AbsWindowedOperator{
 	
 	private void processNewData(IEvent[] newData)
 	{
-		for(IEvent event : newData)
+		if(newData != null)
 		{
-			sum += (long)event.getValue("long");
-			
+			for(int i = 0 ;i < newData.length; i++)
+			{
+				sum += (long)newData[i].getValue(0);
+				
+			}
 		}
+		
 	}
 	
 	private void processOldData(IEvent[] oldData)
 	{
-		for(IEvent event : oldData)
+		if(oldData != null)
 		{
-			sum -= (long)event.getValue("long");
-			
+			for(int i = 0 ;i < oldData.length; i++)
+			{
+				sum += (long)oldData[i].getValue(0);
+				
+			}
 		}
 	}
 	
@@ -51,7 +57,4 @@ public class AggregateSum extends AbsWindowedOperator{
 		}
 		
 	}
-	
-	
-
 }

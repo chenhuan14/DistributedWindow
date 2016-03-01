@@ -53,14 +53,15 @@ public abstract class AbsOperator implements IRichOperator
 		inputSchemas = new HashMap<>();
 		outputStream = Constant.DEFAULT_OUTPUT_STREAM;
 		outputSchema = Constant.DEFAULT_OUTPUT_SCHMA;
+		addInputStream(Constant.DEFAULT_INPUT_STREAM);
+		addInputSchema(Constant.DEFAULT_INPUT_STREAM, Constant.DEFAULT_INPUT_SCHMA);
+    	
     }
     
 
     public final void initialize(Map<String, IEmitter> emitterMap)
         throws StreamingException
     {
-    	this.addInputStream(Constant.DEFAULT_INPUT_STREAM);
-		this.addInputSchema(Constant.DEFAULT_INPUT_STREAM, Constant.DEFAULT_INPUT_SCHMA);
     	
 		this.emitters = emitterMap;
    
@@ -76,7 +77,7 @@ public abstract class AbsOperator implements IRichOperator
 	@Override
 	public String getOutputStream() {
 		// TODO Auto-generated method stub
-		return this.getOutputStream();
+		return this.outputStream;
 	}
 
 	@Override
@@ -92,24 +93,24 @@ public abstract class AbsOperator implements IRichOperator
 	}
 	
 	
-	public void setInputStream(List<String> streamNames) throws StreamingException {
+	public void setInputStream(List<String> streamNames)  {
 		this.inputStreams = streamNames;
 		
 	}
 
 	
-	public void setOutputStream(String streamName) throws StreamingException {
+	public void setOutputStream(String streamName)  {
 		this.outputStream = streamName;
 		
 	}
 
 	
-	public void setInputSchema(Map<String, IEventType> schemas) throws StreamingException {
+	public void setInputSchema(Map<String, IEventType> schemas) {
 		this.inputSchemas = schemas;
 	}
 
 	
-	public void setOutputSchema(IEventType schema) throws StreamingException {
+	public void setOutputSchema(IEventType schema)  {
 		this.outputSchema = schema;
 		
 	}

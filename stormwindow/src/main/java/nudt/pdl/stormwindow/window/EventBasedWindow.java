@@ -13,8 +13,6 @@ import nudt.pdl.stormwindow.view.IRenew;
 import nudt.pdl.stormwindow.view.IView;
 import nudt.pdl.stormwindow.view.ViewImpl;
 
-
-
 /**
  * 根据事件来划分窗口，以特定的某个事件为分界来划分窗口
  */

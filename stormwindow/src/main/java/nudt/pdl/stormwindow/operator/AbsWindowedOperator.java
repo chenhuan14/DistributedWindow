@@ -21,6 +21,7 @@ public abstract class AbsWindowedOperator extends AbsOperator implements IProces
   
 	public AbsWindowedOperator()
 	{
+		super();
 		windowInfo = new WindowInfo();
 		firstStream = new FirstLevelStream();
 	}

@@ -1,7 +1,11 @@
 package nudt.pdl.stormwindow.window.creator;
 
+import java.io.Serializable;
 
-public class WindowInfo {
+public class WindowInfo implements Serializable{
+
+	private static final long serialVersionUID = -2861137547017816640L;
+
 	private String windowName;
 	
 	private WindowType windowType;
