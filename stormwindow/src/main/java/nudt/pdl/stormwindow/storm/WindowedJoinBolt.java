@@ -2,9 +2,9 @@ package nudt.pdl.stormwindow.storm;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.storm.shade.com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,35 +14,24 @@ import backtype.storm.topology.IRichBolt;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import nudt.pdl.stormwindow.exception.StreamingException;
-import nudt.pdl.stormwindow.operator.AbsWindowedOperator;
+import nudt.pdl.stormwindow.operator.AbsWindowedJoinOperator;
 import nudt.pdl.stormwindow.util.Constant;
 
-/**
- * 一个输入流一个输出流的抽象类
- * @author Administrator
- *
- */
-public abstract class WindowedStormBolt extends AbsWindowedOperator implements IRichBolt{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1645582908889146825L;
+public abstract class WindowedJoinBolt extends AbsWindowedJoinOperator implements IRichBolt {
 
+	private static final long serialVersionUID = -2326023250963245052L;
 	private static final Logger LOG = LoggerFactory.getLogger(WindowedStormBolt.class);
-	
 	private OutputCollector collector;
 	
-	public WindowedStormBolt()
-	{
+	public WindowedJoinBolt() {
+		// TODO Auto-generated constructor stub
 		super();
 	}
-	
+
 	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
-		// TODO Auto-generated method stub
-		this.collector = collector;
 		
+		this.collector = collector;
         try
         {
             initialize();
@@ -51,22 +40,18 @@ public abstract class WindowedStormBolt extends AbsWindowedOperator implements I
         {
             LOG.error("Failed to initialize function stream.");
             throw new RuntimeException("failed to initialize output stream", e);
-        }
-		
-	}
-	
-	public void sendToNextBolt(String streamID, Values value)
-	{
-		collector.emit(streamID,value);
-	}
-	
-	public void sendToNextBolt(Values value)
-	{
-		collector.emit(value);
+        }	
 	}
 
+	
+	
+
+	/* (non-Javadoc)
+	 * @see backtype.storm.task.IBolt#execute(backtype.storm.tuple.Tuple)
+	 */
 	@Override
 	public void execute(Tuple input) {
+		// TODO Auto-generated method stub
 		LOG.debug("start to execute storm bolt");
         if (input == null)
         {
@@ -104,12 +89,12 @@ public abstract class WindowedStormBolt extends AbsWindowedOperator implements I
         }
 		
         collector.ack(input);
+		
 	}
 
 	@Override
-    public void cleanup()
-    {
-        try
+	public void cleanup() {
+		try
         {
            destroy();
         }
@@ -118,15 +103,27 @@ public abstract class WindowedStormBolt extends AbsWindowedOperator implements I
             LOG.error("Failed to destroy function stream.");
             throw new RuntimeException("Failed to destroy function stream", e);
         }
-    }
-    
+		
+	}
 
+	protected void sendToNextBolt(String streamID, Values value)
+	{
+		if(streamID.equals(Constant.DEFAULT_OUTPUT_STREAM))
+			collector.emit(value);
+		else
+			collector.emit(streamID,value);
+	}
+	
+
+	protected void sendToNextBolt(Values value)
+	{
+			collector.emit(value);
+	}
+	
 	@Override
 	public Map<String, Object> getComponentConfiguration() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
-	
 }

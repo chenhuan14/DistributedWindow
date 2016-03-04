@@ -28,66 +28,19 @@ public abstract class AbsOperator implements IRichOperator
     private String operatorId;
     
     
-	private String outputStream;
-    
-    private List<String> inputStreams;
+
     
     /**
      * <默认构造函数>
      */
     public AbsOperator()
     {
-    	inputStreams = new ArrayList<String>();
-    	inputStreams.add(Constant.DEFAULT_INPUT_STREAM);
-		outputStream = Constant.DEFAULT_OUTPUT_STREAM;
+    	
     	
     }
     
 
-    
-    @Override
-	public List<String> getInputStream() {
-		// TODO Auto-generated method stub
-		return this.inputStreams;
-	}
 
-	@Override
-	public String getOutputStream() {
-		// TODO Auto-generated method stub
-		return this.outputStream;
-	}
-
-	
-	
-	public void setInputStream(List<String> streamNames)  {
-		this.inputStreams = streamNames;
-		
-	}
-
-	
-	public void setOutputStream(String streamName)  {
-		this.outputStream = streamName;
-		
-	}
-
-
-
-
-    /**
-     * 添加输入流
-     * @param streamName 输入流名称
-     */
-    public void addInputStream(String streamName)
-    {
-        if (!StringUtils.isEmpty(streamName))
-        {
-            if (!inputStreams.contains(streamName))
-            {
-                inputStreams.add(streamName);
-            }
-        }
-    }
-    
     
 
     public String getOperatorId()
