@@ -25,7 +25,8 @@ public class WordTopOne extends WindowedStormBolt{
 		processNewData(newData);
 		processOldData(oldData);
 		String topOne = findTopOne();
-		sendToNextBolt(new Values(topOne,wordCount.get(topOne)));
+		if(!topOne.equals(""))
+			sendToNextBolt(new Values(topOne,wordCount.get(topOne)));
 	}
 	
 	@Override
@@ -38,8 +39,8 @@ public class WordTopOne extends WindowedStormBolt{
 	{
 		for(Tuple t : newData)
 		{
-			String word = t.getString(0);
-			int count = t.getInteger(1);
+			String word = t.getStringByField("word");
+			int count = t.getIntegerByField("count");
 			if(wordCount.containsKey(word))
 				wordCount.put(word, wordCount.get(word)+count);
 			else
@@ -51,8 +52,8 @@ public class WordTopOne extends WindowedStormBolt{
 	{
 		for(Tuple t : oldData)
 		{
-			String word = t.getString(0);
-			int count = t.getInteger(1);
+			String word = t.getStringByField("word");
+			int count = t.getIntegerByField("count");
 			if(wordCount.containsKey(word))
 				wordCount.put(word, wordCount.get(word)-count);
 		}

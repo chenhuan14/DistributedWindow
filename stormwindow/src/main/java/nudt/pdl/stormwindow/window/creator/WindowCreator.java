@@ -6,6 +6,7 @@ import nudt.pdl.stormwindow.window.IWindow;
 import nudt.pdl.stormwindow.window.KeepAllWindow;
 import nudt.pdl.stormwindow.window.LengthBatchWindow;
 import nudt.pdl.stormwindow.window.LengthSlideWindow;
+import nudt.pdl.stormwindow.window.LengthTriggerWindow;
 import nudt.pdl.stormwindow.window.TimeBatchWindow;
 import nudt.pdl.stormwindow.window.TimeSlideWindow;
 
@@ -22,6 +23,8 @@ public class  WindowCreator {
 			return new LengthBatchWindow(info.getKeepLength());
 		else if(type == WindowType.LengthtBased && eviction == WindowEviction.EventSliding)
 			return new EventBasedSlidingWindow();
+		else if (type == WindowType.LengthtBased && eviction == WindowEviction.TriggerSliding)
+			return new LengthTriggerWindow(info.getKeepLength());
 		else if((type == WindowType.TimeBased && eviction == WindowEviction.Sliding))
 			return new TimeSlideWindow(info.getKeepLength(), info.getSlideInteval());
 		else if ((type == WindowType.TimeBased && eviction == WindowEviction.Tumbling))
