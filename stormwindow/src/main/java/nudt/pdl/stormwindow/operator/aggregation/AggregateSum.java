@@ -16,7 +16,7 @@ public class AggregateSum extends WindowedStormBolt{
 	public void process(Tuple[] newData, Tuple[] oldData) {
 		processNewData(newData);
 		processOldData(oldData);
-		sendToNextBolt("sumResult",new Values(sum));
+		sendToNextBolt(new Values(sum));
 	}
 	
 	private void processNewData(Tuple[] newData)
@@ -47,6 +47,6 @@ public class AggregateSum extends WindowedStormBolt{
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declareStream("sumResult", new Fields("result"));
+		declarer.declare(new Fields("localsum"));
 	}
 }

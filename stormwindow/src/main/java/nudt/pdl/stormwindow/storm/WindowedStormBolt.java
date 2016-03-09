@@ -8,6 +8,8 @@ import org.apache.storm.shade.com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.esotericsoftware.minlog.Log;
+
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
@@ -16,6 +18,7 @@ import backtype.storm.tuple.Values;
 import nudt.pdl.stormwindow.exception.StreamingException;
 import nudt.pdl.stormwindow.operator.AbsWindowedOperator;
 import nudt.pdl.stormwindow.util.Constant;
+import nudt.pdl.stormwindow.window.creator.WindowInfo;
 
 /**
  * 一个输入流一个输出流的抽象类
@@ -45,6 +48,17 @@ public abstract class WindowedStormBolt extends AbsWindowedOperator implements I
 		
         try
         {
+        	WindowInfo info = getWindowInfo();
+        	if(info.isSpiltEqual())
+        	{
+        		int subWindowNum = context.getComponentTasks(context.getThisComponentId()).size();
+        		if(info.getKeepLength() % subWindowNum != 0)
+            	{
+            		Log.error("window with keeplength: " + info.getKeepLength() +" cannot spilt to " + subWindowNum + " subwindows") ;
+            		throw new StreamingException("window with keeplength: " + info.getKeepLength() +" cannot spilt to " + subWindowNum + " subwindows");
+            	}
+            	info.setKeepLength(info.getKeepLength() / subWindowNum);	
+        	}
             initialize();
         }
         catch (StreamingException e)

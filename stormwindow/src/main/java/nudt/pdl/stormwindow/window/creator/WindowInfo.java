@@ -12,6 +12,8 @@ public class WindowInfo implements Serializable{
 	
 	private WindowEviction windowEviction;
 	
+	private boolean isSpiltEqual ;
+	
 	private  int slideInteval;
 	/*
 	 * 时间窗为秒数
@@ -29,6 +31,7 @@ public class WindowInfo implements Serializable{
 		windowEviction = WindowEviction.Tumbling;
 		keepLength = 100;
 		slideInteval = 1;
+		isSpiltEqual = false;
 	}
 	
 	
@@ -38,6 +41,33 @@ public class WindowInfo implements Serializable{
 		this.windowType = windowType;
 		this.windowEviction = windowEviction;
 		this.keepLength = keepLength;
+	}
+
+	public WindowInfo(WindowType windowType, WindowEviction windowEviction, long keepLength , boolean isSpiltEqual) {
+		super();
+		this.windowType = windowType;
+		this.windowEviction = windowEviction;
+		this.keepLength = keepLength;
+		this.isSpiltEqual = isSpiltEqual;
+	}
+	
+	
+
+
+	/**
+	 * @return the isSpiltEqual
+	 */
+	public boolean isSpiltEqual() {
+		return isSpiltEqual;
+	}
+
+
+
+	/**
+	 * @param isSpiltEqual the isSpiltEqual to set
+	 */
+	public void setSpiltEqual(boolean isSpiltEqual) {
+		this.isSpiltEqual = isSpiltEqual;
 	}
 
 

@@ -121,6 +121,7 @@ public class JoinTopologyTest {
 		
 	
 		WindowedJoinBolt joinOperator = new InnerJoinCount();
+		
 		WindowInfo leftWindow = new WindowInfo(WindowType.LengthtBased, WindowEviction.Sliding, 5);
 		joinOperator.setLeftWindow(leftWindow);
 		
@@ -133,7 +134,7 @@ public class JoinTopologyTest {
 		
 		builder.setBolt("join", joinOperator).shuffleGrouping("item", "left")
 											.shuffleGrouping("sold","right");
-		builder.setBolt("print", new Printer()).allGrouping("join");
+		builder.setBolt("print", new Printer()).shuffleGrouping("join");
 		
 	
 		
