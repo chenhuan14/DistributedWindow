@@ -25,6 +25,7 @@ public class SumMergeRoundRobin implements IRichBolt
 	int index;
 	Map<Integer,LinkedList<Long>> buffer;
 	Map<Integer, Long> localSum;
+	private Object lock;
 	
 	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
@@ -34,6 +35,8 @@ public class SumMergeRoundRobin implements IRichBolt
 		this.numberInput = sumTasks.size();
 		this.collector = collector;
 		this.index = 0;
+		
+		lock = new Object();
 		
 		localSum = new HashMap<>();
 		
@@ -52,20 +55,28 @@ public class SumMergeRoundRobin implements IRichBolt
 		int taskNum = input.getSourceTask();
 		buffer.get(taskNum).add(input.getLong(0));
 		
-		int targetTask = sumTasks.get(index);
-		
-		if(buffer.get(targetTask).size() != 0)
+		while(true)
 		{
-			localSum.put(targetTask, buffer.get(targetTask).removeFirst());
-			index = (index + 1) % numberInput;
-			collector.emit(new Values(getMergeSum()));
+			int targetTask = sumTasks.get(index);
+			if(buffer.get(targetTask).size() != 0)
+			{
+				localSum.put(targetTask, buffer.get(targetTask).removeFirst());
+				index = (index + 1) % numberInput;
+				collector.emit(new Values(getMergeSum()));
+			}
+			else
+			{
+				break;
+			}
 		}
 	}
 	@Override
 	public void cleanup() {
-		// TODO Auto-generated method stub
+		
 		
 	}
+	
+	
 	
 	private long getMergeSum()
 	{

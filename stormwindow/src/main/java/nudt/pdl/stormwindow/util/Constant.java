@@ -16,4 +16,12 @@ public class Constant {
 	public static final String INDEX_IN_WINDOW = "indexInWindow";
 	
 	public static final String TRIGGER_FLAG = "triggerflag";
+	
+	/********************************************************/
+	
+	public static final String OUTPUT_DIR = "source\\output\\";
+	
+	public static final String LONG_FILE_10M = "source\\longfile10M.txt";
+	
+	public static final String LONG_FILE_10K = "source\\longfile10K.txt";
 }

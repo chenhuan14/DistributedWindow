@@ -22,7 +22,6 @@ public class SumMerge implements IRichBolt
 	List<Integer> sumTasks;
 	OutputCollector collector;
 	
-	Map<Integer,Boolean> freshed;
 	Map<Integer,LinkedList<Long>> buffer;
 	
 	@Override
@@ -32,11 +31,10 @@ public class SumMerge implements IRichBolt
 		this.sumTasks = context.getComponentTasks("sum");
 		this.numberInput = sumTasks.size();
 		this.collector = collector;
-		freshed = new HashMap<>();
+
 		buffer = new HashMap<>();
 		for(int id : sumTasks)
 		{
-			freshed.put(id, false);
 			buffer.put(id, new LinkedList<Long>());
 		}
 		
@@ -46,30 +44,29 @@ public class SumMerge implements IRichBolt
 	public void execute(Tuple input) {
 		// TODO Auto-generated method stub
 		int taskNum = input.getSourceTask();
-		if(buffer.get(taskNum).size()==0)
-		{
-			buffer.get(taskNum).add(input.getLong(0));
-			freshed.put(taskNum, true);
-		}
-		else
-			buffer.get(taskNum).add(input.getLong(0));
 		
-		if(!freshed.values().contains(false))
+		buffer.get(taskNum).add(input.getLong(0));
+		
+		boolean isAllReached = true;
+		for(List list : buffer.values())
+		{
+			if(list.size() == 0)
+			{
+				isAllReached = false;
+				break;
+			}
+		}
+		
+		if(isAllReached)
 		{
 			long totolSum = 0;
 			for(LinkedList<Long> list : buffer.values())
 			{
 				totolSum += list.removeFirst();
 			}
-			
+				
 			collector.emit(new Values(totolSum));
-			
-			for(int id : sumTasks)
-			{
-				freshed.put(id, false);
-			}
 		}
-		
 	}
 	@Override
 	public void cleanup() {
